@@ -17,7 +17,7 @@ export class App extends Component {
       const dailyValue = (day[type] - array[index - 1]?.[type]);
       const previouesDailyValue = (day[type] - array[index - 2]?.[type])/1.25;
       return {
-        y: (dailyValue === 0 ? previouesDailyValue : dailyValue) || 0,
+        y: Math.abs(dailyValue === 0 ? previouesDailyValue : dailyValue) || 0,
         x: day.date
       };
     })
@@ -92,14 +92,14 @@ export class App extends Component {
       {
         id: 'Desths Avg.',
         data:  movingAvg(this.addNewDaily(countryData, 'deaths').map(a => a.y), 2 ).map((c, index) => ({
-          y: (c*1 || index || 1),
+          y: Math.abs(c*1 || index || 1),
           x: this.addNewDaily(countryData, 'deaths')[index]?.x
         }))
       },
       {
         id: 'Cases Avg.',
         data:  movingAvg(this.addNewDaily(countryData, 'confirmed').map(a => a.y), 2 ).map((c, index) => ({
-          y: (c*1 || index || 1),
+          y: Math.abs(c*1 || index || 1),
           x: this.addNewDaily(countryData, 'confirmed')[index]?.x
         }))
       },
