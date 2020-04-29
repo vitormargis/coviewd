@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { ResponsiveLine } from "@nivo/line";
+import { ResponsiveCalendar } from "@nivo/calendar";
 import GraphTotalCombined from "../GraphTotalCombined";
 
 export class App extends Component {
@@ -88,6 +89,12 @@ export class App extends Component {
       },
     ]
 
+    const calendar = dailyCases[2].data.map(cases => ({
+        day: `${cases.x.split('-')[0]}-${cases.x.split('-')[1] <= 9 ? '0' + cases.x.split('-')[1] : cases.x.split('-')[1]}-${(cases.x.split('-')[2]) <= 9 ? '0' + cases.x.split('-')[2] : cases.x.split('-')[2]}`,
+        value: cases.y
+    }))
+
+
     const linear = [
       {
         id: 'Desths Avg.',
@@ -104,6 +111,9 @@ export class App extends Component {
         }))
       },
     ]
+
+    const today = new Date()
+    console.log(`2020-${today.getMonth() + 1}-${today.getDate()}`)
 
     return countryData ? (
       <div className="country-column-wrapper">
@@ -211,7 +221,39 @@ export class App extends Component {
                   }
               ]}
             />
-          </div>        
+          </div>   
+          <div className="chart short">
+            <ResponsiveCalendar
+                data={calendar}
+                from={calendar[0].day}
+                to={calendar[calendar.length - 1 ].day}
+                emptyColor="#eeeeee"
+                colors={[ '#61cdbb', '#97e3d5', '#e8c1a0', '#f47560' ]}
+                margin={{ top: 0, right: 0, bottom: 60, left: 0 }}
+                yearSpacing={40}
+                dayBorderWidth={1.5}
+                monthBorderWidth={0.5}
+                monthBorderColor="rgba(0, 0, 0, 0.15)"
+                monthLegendOffset={18}
+                daySpacing={3}
+                dayBorderColor="#ffffff"
+                monthLegendPosition="after"
+                legends={[
+                    {
+                        anchor: 'bottom',
+                        direction: 'row',
+                        translateY: 36,
+                        itemCount: 7,
+                        itemWidth: 35,
+                        itemHeight: 5,
+                        itemsSpacing: 25,
+                        symbolSize: 12,
+                        symbolShape: 'circle',
+                        itemDirection: 'right-to-left'
+                    }
+                ]}
+            />
+        </div>     
       </div>
       </div>
     ) : null;

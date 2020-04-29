@@ -37,7 +37,7 @@ export class App extends Component {
 
   render() {
     const { countryInput } = this.state;
-    console.log(countryInput);
+
     return this.state.coronaData ? (
       <>
         <SidePanel countries={this.state.countries} countryInput={countryInput} onCountryChange={this.handleCountryChange}/>

@@ -11,7 +11,7 @@ body, html {
   width: auto;
   height: 100%;
   overflow-x: scroll;
-  overflow-y: hidden;
+  overflow-y: scroll;
   white-space: nowrap;
 }
 
@@ -21,11 +21,11 @@ body, html {
   padding: 0 2%;
   border-right: dotted 1px #ccc;
   display: inline-block;
-  margin: 0 -250px 0 250px;
+  margin: 0 -270px 0 270px;
 }
 
 .nav-column-wrapper {
-  width: 250px;
+  width: 270px;
   height: 100%;
   border-right: dotted 1px #ccc;
   background: #f1f1f1;
@@ -75,6 +75,13 @@ body, html {
 .short {
   height: 20%;
   opacity: 0.5;
+}
+
+.short.chart {
+  height: 20%;
+  opacity: 0.9;
+  margin: 40px 0;
+  position: relative;
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Timmana&display=swap');
