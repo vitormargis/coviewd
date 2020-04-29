@@ -151,10 +151,11 @@ export class App extends Component {
 
           <GraphTotalCombined data={countryData} />
           
+          <h2>{"Daily Data + Rolling Average"}</h2>
           <div className="chart">
             <ResponsiveLine
               data={dailyCases}
-              margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+              margin={{ top: 10, right: 115, bottom: 50, left: 50 }}
               xScale={{ type: 'point' }}
               yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
               curve="basis"
@@ -221,7 +222,9 @@ export class App extends Component {
                   }
               ]}
             />
-          </div>   
+          </div>
+          
+          <h2>{"Cases Calendar Heatmap "}</h2>
           <div className="chart short">
             <ResponsiveCalendar
                 data={calendar}
@@ -229,7 +232,7 @@ export class App extends Component {
                 to={calendar[calendar.length - 1 ].day}
                 emptyColor="#eeeeee"
                 colors={[ '#61cdbb', '#97e3d5', '#e8c1a0', '#f47560' ]}
-                margin={{ top: 0, right: 0, bottom: 60, left: 0 }}
+                margin={{ top: 0, right: 0, bottom: 50, left: 0 }}
                 yearSpacing={40}
                 dayBorderWidth={1.5}
                 monthBorderWidth={0.5}

@@ -66,152 +66,155 @@ export class App extends Component {
     ]
     
     return data ? (
-      <div className="graph-total-combined chart-wrapper">
-        <div className="chart">
-          <ResponsiveLine
-            data={dataParsed}
-            margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-            xScale={{ type: 'point' }}
-            yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
-            curve="basis"
-            areaBaselineValue="-20"
-            axisTop={null}
-            enableGridX={false}
-            axisBottom={{
-                orient: 'bottom',
-                tickSize: 5,
-                tickPadding: 6,
-                tickRotation: -45,
-                tickValues: data?.filter((d, i) => d.confirmed > 100 && i % 7 === 0)?.map(d => d.date),
-                legend: '',
-                legendOffset: 0,
-                legendPosition: 'middle'
-            }}
-            axisLeft={{
-                orient: 'left',  
-                // tickValues: dataParsed ?.filter((d, i) => d.confirmed > 100 && i % 10 === 0 || i === dataParsed .length - 1)?.map(d => d.confirmed),
+      <>
+        <h2>{"Total Summary View"}</h2>
+        <div className="graph-total-combined chart-wrapper">
+          <div className="chart">
+            <ResponsiveLine
+              data={dataParsed}
+              margin={{ top: 10, right: 115, bottom: 65, left: 48 }}
+              xScale={{ type: 'point' }}
+              yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
+              curve="basis"
+              areaBaselineValue="-20"
+              axisTop={null}
+              enableGridX={false}
+              axisBottom={{
+                  orient: 'bottom',
+                  tickSize: 5,
+                  tickPadding: 6,
+                  tickRotation: -45,
+                  tickValues: data?.filter((d, i) => d.confirmed > 100 && i % 7 === 0)?.map(d => d.date),
+                  legend: '',
+                  legendOffset: 0,
+                  legendPosition: 'middle'
+              }}
+              axisLeft={{
+                  orient: 'left',  
+                  // tickValues: dataParsed ?.filter((d, i) => d.confirmed > 100 && i % 10 === 0 || i === dataParsed .length - 1)?.map(d => d.confirmed),
+                  tickSize: 5,
+                  tickPadding: 6,
+                  tickRotation: 0,
+                  legend: '',
+                  legendOffset: -50,
+                  legendPosition: 'middle'
+              }}
+              axisRight={false}
+              colors={[dataParsed[0].color, dataParsed[1].color, dataParsed[2].color]}
+              lineWidth={3}
+              enablePoints={false}
+              pointSize={10}
+              pointColor={{ theme: 'background' }}
+              pointBorderWidth={2}
+              pointBorderColor={{ from: 'serieColor' }}
+              pointLabel="y"
+              pointLabelYOffset={-12}
+              enableArea={true}
+              areaOpacity={0.9}
+              useMesh={true}
+              legends={[
+                  {
+                      anchor: 'bottom-right',
+                      direction: 'column',
+                      justify: false,
+                      translateX: 100,
+                      translateY: 0,
+                      itemsSpacing: 0,
+                      itemDirection: 'left-to-right',
+                      itemWidth: 60,
+                      itemHeight: 20,
+                      itemOpacity: 0.75,
+                      symbolSize: 12,
+                      symbolShape: 'circle',
+                      symbolBorderColor: 'rgba(0, 0, 0, .5)',
+                      effects: [
+                          {
+                              on: 'hover',
+                              style: {
+                                  itemBackground: 'rgba(0, 0, 0, .03)',
+                                  itemOpacity: 1
+                              }
+                          }
+                      ]
+                  }
+              ]}
+            />
+          </div>
+          <div className="chart-stack">
+            <ResponsiveLine
+              data={percentage}
+              margin={{ top: 10, right: 115, bottom: 65, left: 48 }}
+              xScale={{ type: 'point' }}
+              yScale={{ type: 'linear', min: '0', max: '100', stacked: false, reverse: false }}
+              curve="cardinal"
+              areaBaselineValue="-20"
+              axisTop={null}
+              enableGridX={false}
+              enableSlices={'x'}
+              enableGridY={false}
+              axisBottom={{
+                  orient: 'bottom',
+                  tickSize: 5,
+                  tickPadding: 6,
+                  tickRotation: -45,
+                  tickValues: dataParsed  ?.filter((d, i) => d.confirmed > 100 && i % 7 === 0)?.map(d => d.date),
+                  legend: '',
+                  legendOffset: 0,
+                  legendPosition: 'middle'
+              }}
+              axisLeft={false}
+              axisRight={{
+                orient: 'left',
                 tickSize: 5,
                 tickPadding: 6,
                 tickRotation: 0,
-                legend: '',
-                legendOffset: -50,
+                legend: 'Percentage %',
+                legendOffset: 47.5,
                 legendPosition: 'middle'
-            }}
-            axisRight={false}
-            colors={[dataParsed[0].color, dataParsed[1].color, dataParsed[2].color]}
-            lineWidth={3}
-            enablePoints={false}
-            pointSize={10}
-            pointColor={{ theme: 'background' }}
-            pointBorderWidth={2}
-            pointBorderColor={{ from: 'serieColor' }}
-            pointLabel="y"
-            pointLabelYOffset={-12}
-            enableArea={true}
-            areaOpacity={0.9}
-            useMesh={true}
-            legends={[
-                {
-                    anchor: 'bottom-right',
-                    direction: 'column',
-                    justify: false,
-                    translateX: 100,
-                    translateY: 0,
-                    itemsSpacing: 0,
-                    itemDirection: 'left-to-right',
-                    itemWidth: 60,
-                    itemHeight: 20,
-                    itemOpacity: 0.75,
-                    symbolSize: 12,
-                    symbolShape: 'circle',
-                    symbolBorderColor: 'rgba(0, 0, 0, .5)',
-                    effects: [
-                        {
-                            on: 'hover',
-                            style: {
-                                itemBackground: 'rgba(0, 0, 0, .03)',
-                                itemOpacity: 1
-                            }
-                        }
-                    ]
-                }
-            ]}
-          />
+              }}
+              colors={['#700000']}
+              lineWidth={1.2}
+              enablePoints={true}
+              pointSize={1.75}
+              pointColor={null}
+              pointBorderWidth={2}
+              pointBorderColor={{ from: 'serieColor' }}
+              pointLabel="y"
+              pointLabelYOffset={-12}
+              enableArea={false}
+              areaOpacity={0}
+              useMesh={true}
+              gridYValues={[1,2,3,4,5,6,7,8,9]}
+              legends={[
+                  {
+                      anchor: 'top-right',
+                      direction: 'column',
+                      justify: false,
+                      translateX: 100,
+                      translateY: 0,
+                      itemsSpacing: 0,
+                      itemDirection: 'left-to-right',
+                      itemWidth: 60,
+                      itemHeight: 20,
+                      itemOpacity: 0.75,
+                      symbolSize: 12,
+                      symbolShape: 'circle',
+                      symbolBorderColor: 'rgba(0, 0, 0, .5)',
+                      effects: [
+                          {
+                              on: 'hover',
+                              style: {
+                                  itemBackground: 'rgba(0, 0, 0, .03)',
+                                  itemOpacity: 1
+                              }
+                          }
+                      ]
+                  }
+              ]}
+            />
+          </div>
         </div>
-        <div className="chart-stack">
-          <ResponsiveLine
-            data={percentage}
-            margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-            xScale={{ type: 'point' }}
-            yScale={{ type: 'linear', min: '0', max: '100', stacked: false, reverse: false }}
-            curve="cardinal"
-            areaBaselineValue="-20"
-            axisTop={null}
-            enableGridX={false}
-            enableSlices={'x'}
-            enableGridY={false}
-            axisBottom={{
-                orient: 'bottom',
-                tickSize: 5,
-                tickPadding: 6,
-                tickRotation: -45,
-                tickValues: dataParsed  ?.filter((d, i) => d.confirmed > 100 && i % 7 === 0)?.map(d => d.date),
-                legend: '',
-                legendOffset: 0,
-                legendPosition: 'middle'
-            }}
-            axisLeft={false}
-            axisRight={{
-              orient: 'left',
-              tickSize: 5,
-              tickPadding: 6,
-              tickRotation: 0,
-              legend: 'Percentage %',
-              legendOffset: 47.5,
-              legendPosition: 'middle'
-            }}
-            colors={['#700000']}
-            lineWidth={1.2}
-            enablePoints={true}
-            pointSize={1.75}
-            pointColor={null}
-            pointBorderWidth={2}
-            pointBorderColor={{ from: 'serieColor' }}
-            pointLabel="y"
-            pointLabelYOffset={-12}
-            enableArea={false}
-            areaOpacity={0}
-            useMesh={true}
-            gridYValues={[1,2,3,4,5,6,7,8,9]}
-            legends={[
-                {
-                    anchor: 'top-right',
-                    direction: 'column',
-                    justify: false,
-                    translateX: 100,
-                    translateY: 0,
-                    itemsSpacing: 0,
-                    itemDirection: 'left-to-right',
-                    itemWidth: 60,
-                    itemHeight: 20,
-                    itemOpacity: 0.75,
-                    symbolSize: 12,
-                    symbolShape: 'circle',
-                    symbolBorderColor: 'rgba(0, 0, 0, .5)',
-                    effects: [
-                        {
-                            on: 'hover',
-                            style: {
-                                itemBackground: 'rgba(0, 0, 0, .03)',
-                                itemOpacity: 1
-                            }
-                        }
-                    ]
-                }
-            ]}
-          />
-        </div>
-      </div>
+      </>
     ) : null;
   }
 }
