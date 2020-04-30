@@ -7,10 +7,83 @@ export class App extends Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+        dailyCases: []
+    }
+
     this.props = {
       data: {},
       country: ''
     }
+
+    this.handleUpdateDaily = this.handleUpdateDaily.bind(this);
+  }
+
+  componentDidMount() {
+    const { data, country } = this.props;
+    console.log(country);
+    
+    const countryData = data[country];
+    console.log(countryData);
+    
+    this.setState({
+        dailyCases: [
+            {
+                id: 'Case Avg.',
+                data: this.movingAvg(this.addNewDaily(countryData, 'confirmed').map(a => a.y), 7 ).map((c, index) => ({
+                y: c || index * 10,
+                x: this.addNewDaily(countryData, 'confirmed')[index]?.x
+                }))
+            },
+            {
+                id: 'Death Avg.',
+                data:  this.movingAvg(this.addNewDaily(countryData, 'deaths').map(a => a.y), 7 ).map((c, index) => ({
+                y: c,
+                x: this.addNewDaily(countryData, 'deaths')[index]?.x
+                }))
+            },
+            {
+                id: 'Cases',
+                data: this.addNewDaily(countryData, 'confirmed')
+            },
+            {
+                id: 'Deaths',
+                data: this.addNewDaily(countryData, 'deaths')
+            },            
+        ] 
+    })
+  }
+
+  componentDidUpdate(nextProps) {
+    const { data, country } = this.props;
+    const countryData = data[country];
+
+    return country !== nextProps.country && this.setState({
+        dailyCases: [
+            {
+                id: 'Case Avg.',
+                data: this.movingAvg(this.addNewDaily(countryData, 'confirmed').map(a => a.y), 7 ).map((c, index) => ({
+                y: c || index * 10,
+                x: this.addNewDaily(countryData, 'confirmed')[index]?.x
+                }))
+            },
+            {
+                id: 'Death Avg.',
+                data:  this.movingAvg(this.addNewDaily(countryData, 'deaths').map(a => a.y), 7 ).map((c, index) => ({
+                y: c,
+                x: this.addNewDaily(countryData, 'deaths')[index]?.x
+                }))
+            },
+            {
+                id: 'Cases',
+                data: this.addNewDaily(countryData, 'confirmed')
+            },
+            {
+                id: 'Deaths',
+                data: this.addNewDaily(countryData, 'deaths')
+            },            
+        ] 
+    })
   }
 
   addNewDaily(data = [], type) {
@@ -24,11 +97,7 @@ export class App extends Component {
     })
   }
 
-  render() {
-    const { data, country } = this.props;
-    const countryData = data[country];
-
-    function movingAvg(array, count, qualifier){
+    movingAvg(array, count, qualifier){
 
         // calculate average for subarray
         var avg = function(array, qualifier){
@@ -64,32 +133,23 @@ export class App extends Component {
         return result;
     }        
 
-    const dailyCases = [
-      {
-        id: 'Case Avg.',
-        data: movingAvg(this.addNewDaily(countryData, 'confirmed').map(a => a.y), 7 ).map((c, index) => ({
-          y: c || index * 10,
-          x: this.addNewDaily(countryData, 'confirmed')[index]?.x
-        }))
-      },
-      {
-        id: 'Death Avg.',
-        data:  movingAvg(this.addNewDaily(countryData, 'deaths').map(a => a.y), 7 ).map((c, index) => ({
-          y: c,
-          x: this.addNewDaily(countryData, 'deaths')[index]?.x
-        }))
-      },
-      {
-        id: 'Cases',
-        data: this.addNewDaily(countryData, 'confirmed')
-      },
-      {
-        id: 'Deaths',
-        data: this.addNewDaily(countryData, 'deaths')
-      },
-    ]
+    handleUpdateDaily(a,b) {
+        this.setState({
+            dailyCases: this.state.dailyCases.map(d => {
+                return {
+                    ...d,
+                    id: d.id ===  a.id ? `(OFF) ${d.id}` : d.id, 
+                    data: d.id ===  a.id ? d.data.map(dd => ({ ...dd, y: 0 })) : d.data
+                }
+            })
+        })                 
+    }
 
-    const calendar = dailyCases[2].data.map(cases => ({
+  render() {
+    const { data, country } = this.props;
+    const countryData = data[country];  
+
+    const calendar = this.addNewDaily(countryData, 'confirmed').map(cases => ({
         day: `${cases.x.split('-')[0]}-${cases.x.split('-')[1] <= 9 ? '0' + cases.x.split('-')[1] : cases.x.split('-')[1]}-${(cases.x.split('-')[2]) <= 9 ? '0' + cases.x.split('-')[2] : cases.x.split('-')[2]}`,
         value: cases.y
     }))
@@ -98,22 +158,21 @@ export class App extends Component {
     const linear = [
       {
         id: 'Desths Avg.',
-        data:  movingAvg(this.addNewDaily(countryData, 'deaths').map(a => a.y), 2 ).map((c, index) => ({
+        data:  this.movingAvg(this.addNewDaily(countryData, 'deaths').map(a => a.y), 2 ).map((c, index) => ({
           y: Math.abs(c*1 || index || 1),
           x: this.addNewDaily(countryData, 'deaths')[index]?.x
         }))
       },
       {
         id: 'Cases Avg.',
-        data:  movingAvg(this.addNewDaily(countryData, 'confirmed').map(a => a.y), 2 ).map((c, index) => ({
+        data:  this.movingAvg(this.addNewDaily(countryData, 'confirmed').map(a => a.y), 2 ).map((c, index) => ({
           y: Math.abs(c*1 || index || 1),
           x: this.addNewDaily(countryData, 'confirmed')[index]?.x
         }))
       },
     ]
 
-    const today = new Date()
-    console.log(`2020-${today.getMonth() + 1}-${today.getDate()}`)
+    console.log(this.state.dailyCases)
 
     return countryData ? (
       <div className="country-column-wrapper">
@@ -154,8 +213,9 @@ export class App extends Component {
           <h2>{"Daily Data + Rolling Average"}</h2>
           <div className="chart">
             <ResponsiveLine
-              data={dailyCases}
-              margin={{ top: 10, right: 115, bottom: 50, left: 50 }}
+              data={this.state.dailyCases}
+              hiddenIds={['Cases']}
+              margin={{ top: 0, right: 115, bottom: 60, left: 50 }}
               xScale={{ type: 'point' }}
               yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
               curve="basis"
@@ -197,6 +257,7 @@ export class App extends Component {
               useMesh={true}
               legends={[
                   {
+                      onClick: this.handleUpdateDaily,
                       anchor: 'bottom-right',
                       direction: 'column',
                       justify: false,
@@ -204,7 +265,7 @@ export class App extends Component {
                       translateY: 0,
                       itemsSpacing: 0,
                       itemDirection: 'left-to-right',
-                      itemWidth: 60,
+                      itemWidth: 65,
                       itemHeight: 20,
                       itemOpacity: 0.75,
                       symbolSize: 12,
@@ -224,7 +285,7 @@ export class App extends Component {
             />
           </div>
           
-          <h2>{"Cases Calendar Heatmap "}</h2>
+          <h2 style={{ margin: '25px 0px -35px 0px'}}>{"Cases Calendar Heatmap "}</h2>
           <div className="chart short">
             <ResponsiveCalendar
                 data={calendar}

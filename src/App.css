@@ -70,6 +70,7 @@ body, html {
   top: 0;
   left: 0;
   opacity: 1;
+  pointer-events: none;
 }
 
 .short {
@@ -103,7 +104,7 @@ h1 {
   text-align: center;
   margin: 0;
   font-weight: 900;
-  font-size: 75px;
+  font-size: 70px;
   /* font-style: italic; */
   text-transform: uppercase;
   opacity: 1;

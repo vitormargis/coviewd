@@ -13,57 +13,38 @@ export class App extends Component {
   render() {
     const { data } = this.props;
 
-    const dataParsed = [
-      { 
-        id: "Recovered",
-        color: '#ccc626',
-        data: data?.filter((d, i) => d.confirmed > 100 && (i % 1 === 0 || i === data.length - 1))?.map(d => ({
-          y: d.recovered,
-          x: d.date,
-        })) || []
-      },
-      { 
-        id: "Deaths",
-        color: '#af0041',
-        data: data?.filter((d, i) => d.confirmed > 100 && (i % 1 === 0 || i === data.length - 1))?.map(d => ({
-          y: d.deaths,
-          x: d.date,
-        })) || []
-      },
-      { 
-        id: "Cases",
-        color: '#d74721',
-        data: data?.filter((d, i) => d.confirmed > 100 && (i % 1 === 0 || i === data.length - 1))?.map(d => ({
-          y: d.confirmed,
-          x: d.date,
-        })) || []
-      },
-    ].map((a, index, arr) => {
-      
-      // const c = a.data.map(b => {
-      //   return b
-      // })
+    const dimensions = [
+      { id: 'Recovered', color: '#ccc626'},
+      { id: 'Deaths', color: '#af0041'},
+      { id: 'Confirmed', color: '#d74721'},
+    ]
 
-      if (index === 0 && arr[0].data[arr[0].data.length-1].y > arr[1].data[arr[1].data.length-1].y) {
-        return arr[1]
-      }
+    const defaultTimSeriesStartFilter = (d, i) => 
+      d.confirmed > 100 && (i % 1 === 0 || i === data.length - 1);
 
-      if (index === 1 && arr[0].data[arr[0].data.length-1].y > arr[1].data[arr[1].data.length-1].y) {
-        return arr[0]
-      }
+    const dataTotalSummaryView = dimensions.map(({ id, color }) => ({
+      id,
+      color,
+      data: data?.filter(defaultTimSeriesStartFilter)?.map(item => ({
+        y: item[id.toLocaleLowerCase()],
+        x: item.date,
+      })) || []
+    })).map((a, index, arr) => {
+      const moreRecoveredThanDeaths = 
+        arr[0].data[arr[0].data.length-1].y > arr[1].data[arr[1].data.length-1].y;
 
+      if (index === 0 && moreRecoveredThanDeaths) return arr[1]
+      if (index === 1 && moreRecoveredThanDeaths) return arr[0]
       return arr[index]
     })
 
-    const percentage = [
-      { 
-        id: "Death Rate",
-        data: data?.filter((d, i) => d.confirmed > 100 && (i % 1 === 0 || i === data.length - 1))?.map(d => ({
-          y: (d.deaths/d.confirmed*100).toFixed(2),
-          x: d.date,
-        })) || []
-      }
-    ]
+    const percentage = [{ 
+      id: "Death Rate",
+      data: data?.filter(defaultTimSeriesStartFilter)?.map(({deaths, confirmed, date}) => ({
+        y: (deaths / confirmed * 100).toFixed(2),
+        x: date,
+      })) || []
+    }]
     
     return data ? (
       <>
@@ -71,7 +52,7 @@ export class App extends Component {
         <div className="graph-total-combined chart-wrapper">
           <div className="chart">
             <ResponsiveLine
-              data={dataParsed}
+              data={dataTotalSummaryView}
               margin={{ top: 10, right: 115, bottom: 65, left: 48 }}
               xScale={{ type: 'point' }}
               yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
@@ -91,7 +72,6 @@ export class App extends Component {
               }}
               axisLeft={{
                   orient: 'left',  
-                  // tickValues: dataParsed ?.filter((d, i) => d.confirmed > 100 && i % 10 === 0 || i === dataParsed .length - 1)?.map(d => d.confirmed),
                   tickSize: 5,
                   tickPadding: 6,
                   tickRotation: 0,
@@ -100,7 +80,7 @@ export class App extends Component {
                   legendPosition: 'middle'
               }}
               axisRight={false}
-              colors={[dataParsed[0].color, dataParsed[1].color, dataParsed[2].color]}
+              colors={[dataTotalSummaryView[0].color, dataTotalSummaryView[1].color, dataTotalSummaryView[2].color]}
               lineWidth={3}
               enablePoints={false}
               pointSize={10}
@@ -112,32 +92,37 @@ export class App extends Component {
               enableArea={true}
               areaOpacity={0.9}
               useMesh={true}
-              legends={[
-                  {
-                      anchor: 'bottom-right',
-                      direction: 'column',
-                      justify: false,
-                      translateX: 100,
-                      translateY: 0,
-                      itemsSpacing: 0,
-                      itemDirection: 'left-to-right',
-                      itemWidth: 60,
-                      itemHeight: 20,
-                      itemOpacity: 0.75,
-                      symbolSize: 12,
-                      symbolShape: 'circle',
-                      symbolBorderColor: 'rgba(0, 0, 0, .5)',
-                      effects: [
-                          {
-                              on: 'hover',
-                              style: {
-                                  itemBackground: 'rgba(0, 0, 0, .03)',
-                                  itemOpacity: 1
-                              }
-                          }
-                      ]
-                  }
-              ]}
+              legends={dataTotalSummaryView.map((data, index) => ({
+                data:[{
+                  id: data.id,
+                  label: data.id,
+                  value: index,
+                  fill: data.color,
+                  color: data.color,
+                }],
+                anchor: 'bottom-right',
+                direction: 'column',
+                justify: false,
+                translateX: 100,
+                itemsSpacing: 0,
+                itemDirection: 'left-to-right',
+                itemWidth: 65,
+                itemHeight: 20,
+                itemOpacity: 0.75,
+                symbolSize: 10,
+                translateY: index * 20 - 32,
+                symbolShape: 'circle',
+                symbolBorderColor: 'rgba(0, 0, 0, .5)',
+                effects: [
+                    {
+                        on: 'hover',
+                        style: {
+                            itemBackground: 'rgba(0, 0, 0, .03)',
+                            itemOpacity: 1
+                        }
+                    }
+                ]
+              }))}
             />
           </div>
           <div className="chart-stack">
@@ -157,7 +142,7 @@ export class App extends Component {
                   tickSize: 5,
                   tickPadding: 6,
                   tickRotation: -45,
-                  tickValues: dataParsed  ?.filter((d, i) => d.confirmed > 100 && i % 7 === 0)?.map(d => d.date),
+                  tickValues: dataTotalSummaryView  ?.filter((d, i) => d.confirmed > 100 && i % 7 === 0)?.map(d => d.date),
                   legend: '',
                   legendOffset: 0,
                   legendPosition: 'middle'
@@ -165,11 +150,11 @@ export class App extends Component {
               axisLeft={false}
               axisRight={{
                 orient: 'left',
-                tickSize: 5,
-                tickPadding: 6,
+                tickSize: 3,
+                tickPadding: 5,
                 tickRotation: 0,
                 legend: 'Percentage %',
-                legendOffset: 47.5,
+                legendOffset: 40,
                 legendPosition: 'middle'
               }}
               colors={['#700000']}
@@ -194,10 +179,10 @@ export class App extends Component {
                       translateY: 0,
                       itemsSpacing: 0,
                       itemDirection: 'left-to-right',
-                      itemWidth: 60,
+                      itemWidth: 65,
                       itemHeight: 20,
                       itemOpacity: 0.75,
-                      symbolSize: 12,
+                      symbolSize: 10,
                       symbolShape: 'circle',
                       symbolBorderColor: 'rgba(0, 0, 0, .5)',
                       effects: [

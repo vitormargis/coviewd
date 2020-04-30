@@ -11,8 +11,8 @@ export class App extends Component {
     
     this.state = {
       coronaData: null,
-      country: queryParams.get('country')?.charAt(0).toUpperCase() + queryParams.get('country')?.slice(1) || 'Brazil',
-      countryInput: [{ value: 'Brazil', label: 'Brazil' }],
+      country: queryParams.get('country')?.charAt(0).toUpperCase() + queryParams.get('country')?.slice(1) || 'Netherlands',
+      countryInput: [{ value: 'Netherlands', label: 'Netherlands' }],
     }
     this.handleCountryChange = this.handleCountryChange.bind(this)
   }
