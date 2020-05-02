@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { ResponsiveLine } from "@nivo/line";
 import { ResponsiveCalendar } from "@nivo/calendar";
 import GraphTotalCombined from "../GraphTotalCombined";
+import movingAverage from "../utils/movingAverage"
 
 export class App extends Component {
   constructor(props) {
@@ -21,34 +22,53 @@ export class App extends Component {
 
   componentDidMount() {
     const { data, country } = this.props;
-    console.log(country);
-    
     const countryData = data[country];
-    console.log(countryData);
     
     this.setState({
         dailyCases: [
             {
-                id: 'Case Avg.',
-                data: this.movingAvg(this.addNewDaily(countryData, 'confirmed').map(a => a.y), 7 ).map((c, index) => ({
+              id: 'Case Avg.',
+              status: true,
+              color: '#ddd',
+              colorOriginal: '#ddd',
+              data: movingAverage(this.addNewDaily(countryData, 'confirmed').map(a => a.y), 7 ).map((c, index) => ({
                 y: c || index * 10,
                 x: this.addNewDaily(countryData, 'confirmed')[index]?.x
-                }))
+              })),
+              dataOriginal: movingAverage(this.addNewDaily(countryData, 'confirmed').map(a => a.y), 7 ).map((c, index) => ({
+                y: c || index * 10,
+                x: this.addNewDaily(countryData, 'confirmed')[index]?.x
+              }))
             },
             {
-                id: 'Death Avg.',
-                data:  this.movingAvg(this.addNewDaily(countryData, 'deaths').map(a => a.y), 7 ).map((c, index) => ({
+              id: 'Death Avg.',
+              status: true,
+              color: '#ddd',
+              colorOriginal: '#ddd',
+              data:  movingAverage(this.addNewDaily(countryData, 'deaths').map(a => a.y), 7 ).map((c, index) => ({
                 y: c,
                 x: this.addNewDaily(countryData, 'deaths')[index]?.x
-                }))
+              })),
+              dataOriginal:  movingAverage(this.addNewDaily(countryData, 'deaths').map(a => a.y), 7 ).map((c, index) => ({
+                y: c,
+                x: this.addNewDaily(countryData, 'deaths')[index]?.x
+              }))
             },
             {
                 id: 'Cases',
-                data: this.addNewDaily(countryData, 'confirmed')
+                status: true,
+                color: '#d74721',
+                colorOriginal: '#d74721',
+                data: this.addNewDaily(countryData, 'confirmed'),
+                dataOriginal: this.addNewDaily(countryData, 'confirmed')
             },
             {
                 id: 'Deaths',
-                data: this.addNewDaily(countryData, 'deaths')
+                status: true,
+                color: '#af0041',
+                colorOriginal: '#af0041',
+                data: this.addNewDaily(countryData, 'deaths'),
+                dataOriginal: this.addNewDaily(countryData, 'deaths')
             },            
         ] 
     })
@@ -59,30 +79,30 @@ export class App extends Component {
     const countryData = data[country];
 
     return country !== nextProps.country && this.setState({
-        dailyCases: [
-            {
-                id: 'Case Avg.',
-                data: this.movingAvg(this.addNewDaily(countryData, 'confirmed').map(a => a.y), 7 ).map((c, index) => ({
-                y: c || index * 10,
-                x: this.addNewDaily(countryData, 'confirmed')[index]?.x
-                }))
-            },
-            {
-                id: 'Death Avg.',
-                data:  this.movingAvg(this.addNewDaily(countryData, 'deaths').map(a => a.y), 7 ).map((c, index) => ({
-                y: c,
-                x: this.addNewDaily(countryData, 'deaths')[index]?.x
-                }))
-            },
-            {
-                id: 'Cases',
-                data: this.addNewDaily(countryData, 'confirmed')
-            },
-            {
-                id: 'Deaths',
-                data: this.addNewDaily(countryData, 'deaths')
-            },            
-        ] 
+      dailyCases: [
+        {
+          id: 'Case Avg.',
+          data: movingAverage(this.addNewDaily(countryData, 'confirmed').map(a => a.y), 7 ).map((c, index) => ({
+            y: c || index * 10,
+            x: this.addNewDaily(countryData, 'confirmed')[index]?.x
+          }))
+        },
+        {
+          id: 'Death Avg.',
+          data:  movingAverage(this.addNewDaily(countryData, 'deaths').map(a => a.y), 7 ).map((c, index) => ({
+            y: c,
+            x: this.addNewDaily(countryData, 'deaths')[index]?.x
+          }))
+        },
+        {
+          id: 'Cases',
+          data: this.addNewDaily(countryData, 'confirmed')
+        },
+        {
+          id: 'Deaths',
+          data: this.addNewDaily(countryData, 'deaths')
+        },            
+      ] 
     })
   }
 
@@ -97,82 +117,52 @@ export class App extends Component {
     })
   }
 
-    movingAvg(array, count, qualifier){
+  handleUpdateDaily(a,b) {
+    this.setState({
+        dailyCases: this.state.dailyCases.map(d => {
+          console.log(d.id, a.id);
 
-        // calculate average for subarray
-        var avg = function(array, qualifier){
-
-            var sum = 0, count = 0, val;
-            for (var i in array){
-                val = array[i];
-                if (!qualifier || qualifier(val)){
-                    sum += val;
-                    count++;
-                }
-            }
-
-            return sum / count;
-        };
-
-        var result = [], val;
-
-        // pad beginning of result with null values
-        for (var i=0; i < count-1; i++)
-            result.push(null);
-
-        // calculate average for each subarray and add to result
-        for (let i=0, len=array.length - count; i <= len; i++){
-
-            val = avg(array.slice(i, i + count), qualifier);
-            if (isNaN(val))
-                result.push(null);
-            else
-                result.push(val);
-        }
-
-        return result;
-    }        
-
-    handleUpdateDaily(a,b) {
-        this.setState({
-            dailyCases: this.state.dailyCases.map(d => {
-                return {
-                    ...d,
-                    id: d.id ===  a.id ? `(OFF) ${d.id}` : d.id, 
-                    data: d.id ===  a.id ? d.data.map(dd => ({ ...dd, y: 0 })) : d.data
-                }
-            })
-        })                 
-    }
+          return d.id === a.id ? {
+            ...d,
+            id: d.id,
+            status: d.status ? false : true,
+            color: d.status ? '#f5f5f5' : d.colorOriginal, 
+            data: d.status ? d.dataOriginal.map(dd => ({ ...dd, y: 0 })) : d.dataOriginal
+          } : d;
+        })
+    })                 
+  }
 
   render() {
+    const { dailyCases } = this.state;
     const { data, country } = this.props;
-    const countryData = data[country];  
+    const countryData = data[country];
+
+    console.log(dailyCases);
+    
 
     const calendar = this.addNewDaily(countryData, 'confirmed').map(cases => ({
-        day: `${cases.x.split('-')[0]}-${cases.x.split('-')[1] <= 9 ? '0' + cases.x.split('-')[1] : cases.x.split('-')[1]}-${(cases.x.split('-')[2]) <= 9 ? '0' + cases.x.split('-')[2] : cases.x.split('-')[2]}`,
-        value: cases.y
+      day: `${cases.x.split('-')[0]}-${cases.x.split('-')[1] <= 9 ? '0' + cases.x.split('-')[1] : cases.x.split('-')[1]}-${(cases.x.split('-')[2]) <= 9 ? '0' + cases.x.split('-')[2] : cases.x.split('-')[2]}`,
+      value: cases.y
     }))
 
 
     const linear = [
       {
         id: 'Desths Avg.',
-        data:  this.movingAvg(this.addNewDaily(countryData, 'deaths').map(a => a.y), 2 ).map((c, index) => ({
+        data:  movingAverage(this.addNewDaily(countryData, 'deaths').map(a => a.y), 2 ).map((c, index) => ({
           y: Math.abs(c*1 || index || 1),
           x: this.addNewDaily(countryData, 'deaths')[index]?.x
         }))
       },
       {
         id: 'Cases Avg.',
-        data:  this.movingAvg(this.addNewDaily(countryData, 'confirmed').map(a => a.y), 2 ).map((c, index) => ({
+        data:  movingAverage(this.addNewDaily(countryData, 'confirmed').map(a => a.y), 2 ).map((c, index) => ({
           y: Math.abs(c*1 || index || 1),
           x: this.addNewDaily(countryData, 'confirmed')[index]?.x
         }))
       },
     ]
-
-    console.log(this.state.dailyCases)
 
     return countryData ? (
       <div className="country-column-wrapper">
@@ -213,7 +203,7 @@ export class App extends Component {
           <h2>{"Daily Data + Rolling Average"}</h2>
           <div className="chart">
             <ResponsiveLine
-              data={this.state.dailyCases}
+              data={dailyCases}
               hiddenIds={['Cases']}
               margin={{ top: 0, right: 115, bottom: 60, left: 50 }}
               xScale={{ type: 'point' }}
@@ -243,7 +233,7 @@ export class App extends Component {
                   legendOffset: 0,
                   legendPosition: 'middle'
               }}
-              colors={['#ddd', '#ddd', '#d74721', '#af0041']}
+              colors={dailyCases.map(({ color }) => color)}
               lineWidth={3}
               enablePoints={false}
               pointSize={4}
