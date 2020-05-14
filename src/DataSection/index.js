@@ -25,56 +25,57 @@ export class App extends Component {
     const countryData = data[country];
     
     this.setState({
-        dailyCases: [
-            {
-              id: 'Case Avg.',
-              status: true,
-              color: '#ddd',
-              colorOriginal: '#ddd',
-              data: movingAverage(this.addNewDaily(countryData, 'confirmed').map(a => a.y), 7 ).map((c, index) => ({
-                y: c || index * 10,
-                x: this.addNewDaily(countryData, 'confirmed')[index]?.x
-              })),
-              dataOriginal: movingAverage(this.addNewDaily(countryData, 'confirmed').map(a => a.y), 7 ).map((c, index) => ({
-                y: c || index * 10,
-                x: this.addNewDaily(countryData, 'confirmed')[index]?.x
-              }))
-            },
-            {
-              id: 'Death Avg.',
-              status: true,
-              color: '#ddd',
-              colorOriginal: '#ddd',
-              data:  movingAverage(this.addNewDaily(countryData, 'deaths').map(a => a.y), 7 ).map((c, index) => ({
-                y: c,
-                x: this.addNewDaily(countryData, 'deaths')[index]?.x
-              })),
-              dataOriginal:  movingAverage(this.addNewDaily(countryData, 'deaths').map(a => a.y), 7 ).map((c, index) => ({
-                y: c,
-                x: this.addNewDaily(countryData, 'deaths')[index]?.x
-              }))
-            },
-            {
-                id: 'Cases',
-                status: true,
-                color: '#d74721',
-                colorOriginal: '#d74721',
-                data: this.addNewDaily(countryData, 'confirmed'),
-                dataOriginal: this.addNewDaily(countryData, 'confirmed')
-            },
-            {
-                id: 'Deaths',
-                status: true,
-                color: '#af0041',
-                colorOriginal: '#af0041',
-                data: this.addNewDaily(countryData, 'deaths'),
-                dataOriginal: this.addNewDaily(countryData, 'deaths')
-            },            
-        ] 
+      dailyCases: [
+        {
+          id: 'Case Avg.',
+          status: true,
+          color: '#ddd',
+          colorOriginal: '#ddd',
+          data: movingAverage(this.addNewDaily(countryData, 'confirmed').map(a => a.y), 7 ).map((c, index) => ({
+            y: c || index * 10,
+            x: this.addNewDaily(countryData, 'confirmed')[index]?.x
+          })),
+          dataOriginal: movingAverage(this.addNewDaily(countryData, 'confirmed').map(a => a.y), 7 ).map((c, index) => ({
+            y: c || index * 10,
+            x: this.addNewDaily(countryData, 'confirmed')[index]?.x
+          }))
+        },
+        {
+          id: 'Death Avg.',
+          status: true,
+          color: '#ddd',
+          colorOriginal: '#ddd',
+          data:  movingAverage(this.addNewDaily(countryData, 'deaths').map(a => a.y), 7 ).map((c, index) => ({
+            y: c,
+            x: this.addNewDaily(countryData, 'deaths')[index]?.x
+          })),
+          dataOriginal:  movingAverage(this.addNewDaily(countryData, 'deaths').map(a => a.y), 7 ).map((c, index) => ({
+            y: c,
+            x: this.addNewDaily(countryData, 'deaths')[index]?.x
+          }))
+        },
+        {
+          id: 'Cases',
+          status: true,
+          color: '#d74721',
+          colorOriginal: '#d74721',
+          data: this.addNewDaily(countryData, 'confirmed'),
+          dataOriginal: this.addNewDaily(countryData, 'confirmed')
+        },
+        {
+          id: 'Deaths',
+          status: true,
+          color: '#af0041',
+          colorOriginal: '#af0041',
+          data: this.addNewDaily(countryData, 'deaths'),
+          dataOriginal: this.addNewDaily(countryData, 'deaths')
+        },            
+      ] 
     })
   }
 
   componentDidUpdate(nextProps) {
+    const { dailyCases } = nextProps;
     const { data, country } = this.props;
     const countryData = data[country];
 
@@ -82,25 +83,47 @@ export class App extends Component {
       dailyCases: [
         {
           id: 'Case Avg.',
+          status: true,
+          color: '#ddd',
+          colorOriginal: '#ddd',
           data: movingAverage(this.addNewDaily(countryData, 'confirmed').map(a => a.y), 7 ).map((c, index) => ({
+            y: c || index * 10,
+            x: this.addNewDaily(countryData, 'confirmed')[index]?.x
+          })),
+          dataOriginal: movingAverage(this.addNewDaily(countryData, 'confirmed').map(a => a.y), 7 ).map((c, index) => ({
             y: c || index * 10,
             x: this.addNewDaily(countryData, 'confirmed')[index]?.x
           }))
         },
         {
           id: 'Death Avg.',
+          status: true,
+          color: '#ddd',
+          colorOriginal: '#ddd',
           data:  movingAverage(this.addNewDaily(countryData, 'deaths').map(a => a.y), 7 ).map((c, index) => ({
+            y: c,
+            x: this.addNewDaily(countryData, 'deaths')[index]?.x
+          })),
+          dataOriginal:  movingAverage(this.addNewDaily(countryData, 'deaths').map(a => a.y), 7 ).map((c, index) => ({
             y: c,
             x: this.addNewDaily(countryData, 'deaths')[index]?.x
           }))
         },
         {
           id: 'Cases',
-          data: this.addNewDaily(countryData, 'confirmed')
+          status: true,
+          color: '#d74721',
+          colorOriginal: '#d74721',
+          data: this.addNewDaily(countryData, 'confirmed'),
+          dataOriginal: this.addNewDaily(countryData, 'confirmed')
         },
         {
           id: 'Deaths',
-          data: this.addNewDaily(countryData, 'deaths')
+          status: true,
+          color: '#af0041',
+          colorOriginal: '#af0041',
+          data: this.addNewDaily(countryData, 'deaths'),
+          dataOriginal: this.addNewDaily(countryData, 'deaths')
         },            
       ] 
     })
@@ -282,7 +305,7 @@ export class App extends Component {
                 from={calendar[0].day}
                 to={calendar[calendar.length - 1 ].day}
                 emptyColor="#eeeeee"
-                colors={[ '#61cdbb', '#97e3d5', '#e8c1a0', '#f47560' ]}
+                colors={[ '#abeee3', '#61cdbb', '#32a48c', '#e8c1a0', '#f47560', '#c03923' ]}
                 margin={{ top: 0, right: 0, bottom: 50, left: 0 }}
                 yearSpacing={40}
                 dayBorderWidth={1.5}

@@ -130,7 +130,7 @@ export class App extends Component {
               data={percentage}
               margin={{ top: 10, right: 115, bottom: 65, left: 48 }}
               xScale={{ type: 'point' }}
-              yScale={{ type: 'linear', min: '0', max: '100', stacked: false, reverse: false }}
+              yScale={{ type: 'linear', min: '0', max: '20', stacked: false, reverse: false }}
               curve="cardinal"
               areaBaselineValue="-20"
               axisTop={null}

@@ -10,23 +10,39 @@ export class App extends Component {
     const queryParams = new URLSearchParams(window.location.search);
     
     this.state = {
-      coronaData: null,
+      timeseries: null,
       country: queryParams.get('country')?.charAt(0).toUpperCase() + queryParams.get('country')?.slice(1) || 'Netherlands',
-      countryInput: [{ value: 'Netherlands', label: 'Netherlands' }],
+      countryInput: [],
     }
     this.handleCountryChange = this.handleCountryChange.bind(this)
   }
 
   componentDidMount() {
-    
+   
+    fetch(`https://freegeoip.app/json/`)
+      .then((data) => data.json())
+      .then((data) => {
+        this.setState({ 
+          countryInput: [{ value: data.country_name, label: data.country_name }],
+        });
+    })
+
     fetch(`https://pomber.github.io/covid19/timeseries.json`)
       .then((data) => data.json())
       .then((data) => {
         const countries = Object.keys(data);
 
         this.setState({ 
-          coronaData: data,
+          timeseries: data,
           countries
+        });
+    })
+
+    fetch(`https://api.covid19api.com/summary`)
+      .then((data) => data.json())
+      .then((data) => {
+        this.setState({ 
+          summary: data
         });
     })
   }
@@ -38,10 +54,10 @@ export class App extends Component {
   render() {
     const { countryInput } = this.state;
 
-    return this.state.coronaData ? (
+    return this.state.timeseries ? (
       <>
         <SidePanel countries={this.state.countries} countryInput={countryInput} onCountryChange={this.handleCountryChange}/>
-        { countryInput && countryInput.map(country => <DataSection data={this.state.coronaData} country={country.value} />).reverse() }
+        { countryInput && countryInput.map(country => <DataSection data={this.state.timeseries} country={country.value} />).reverse() }
       </>
     ) : null;
   }
